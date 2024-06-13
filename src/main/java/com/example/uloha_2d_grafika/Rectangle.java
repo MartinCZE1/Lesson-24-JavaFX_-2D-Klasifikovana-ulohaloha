@@ -53,18 +53,18 @@ public class Rectangle {
     }
 
     public void incrementX() {
-        x++;
+        x += 5;
     }
 
     public void decrementX() {
-        x--;
+        x -= 5;
     }
 
     public void incrementY() {
-        y++;
+        y += 5;
     }
 
     public void decrementY() {
-        y--;
+        y -= 5;
     }
 }

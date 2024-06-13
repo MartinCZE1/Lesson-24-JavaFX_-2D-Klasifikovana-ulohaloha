@@ -5,10 +5,8 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.ScrollToEvent;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -19,15 +17,20 @@ public class MainApplication extends Application {
     public static final int SCREEN_WIDTH = 1900;
     public static final int SCREEN_HEIGHT = 920;
     public boolean stop = false;
-    public int speed = 1000000000;
-    Direction direction = Direction.right;
+    public int speed = 25;
+    double clickedX;
+    double clickedY;
 
     GraphicsContext graphicsContext;
 
-    int pickRandomDirection;
+    int pickRandomDirection = 1;
 
     Baloon baloon;
+    Image texture;
+    Image popTexture;
+
     Random rd = new Random();
+
     @Override
     public void start(Stage stage) {
         VBox root = new VBox();
@@ -39,9 +42,26 @@ public class MainApplication extends Application {
         stage.setTitle("Klasifikovaná úloha");
         stage.show();
 
+        baloon = new Baloon(rd.nextInt(SCREEN_WIDTH - 100), rd.nextInt(SCREEN_HEIGHT - 100));
+
+        scene.addEventFilter(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+            System.out.println("Clicked on " + mouseEvent.getX() + " " + mouseEvent.getY());
+            clickedX = mouseEvent.getX();
+            clickedY = mouseEvent.getY();
+
+            if (clickedX >= baloon.x && clickedX <= baloon.x + baloon.width && clickedY >= baloon.y && clickedY <= baloon.y + baloon.height) {
+                System.out.println("The baloon has been popped.");
+                speed = 0;
+                graphicsContext.drawImage(popTexture, baloon.x, baloon.y, baloon.height, baloon.height);
+                baloon.setX(rd.nextInt(SCREEN_WIDTH - 100));
+                baloon.setY(rd.nextInt(SCREEN_HEIGHT - 100));
+                speed = 25;
+                pickRandomDirection = rd.nextInt(3) + 1;
+                System.out.println(pickRandomDirection);
 
 
-        baloon = new Baloon(rd.nextInt(SCREEN_WIDTH), rd.nextInt(SCREEN_HEIGHT));
+            }
+        });
 
         AnimationTimer animationTimer = new AnimationTimer() {
             long lastTick = 0;
@@ -63,28 +83,38 @@ public class MainApplication extends Application {
         }
 
         clearScreen();
-        Image texture = baloon.getImages()[0];
-        pickRandomDirection = rd.nextInt(3) + 1;
+        texture = baloon.loadTexture();
+        popTexture = baloon.loadPopTexture();
 
-        switch (pickRandomDirection) {
-            case 1:
-                stop = baloon.getY() < 0;
-                if (!stop) baloon.decrementY();
-                break;
-            case 2:
-                stop = baloon.getY() > SCREEN_HEIGHT - baloon.height;
-                if (!stop) baloon.incrementY();
-                break;
-            case 3:
-                stop = baloon.getX() < 0;
-                if (!stop) baloon.decrementX();
-                break;
-            case 4:
-                stop = baloon.getX() > SCREEN_WIDTH - baloon.height;
-                if (!stop) baloon.incrementX();
-                break;
+        if (pickRandomDirection == 1) { // upRight
+            if (baloon.y <= 0 || baloon.x >= SCREEN_WIDTH - baloon.width) {
+                pickRandomDirection = 2;
+            } else {
+                baloon.decrementY();
+                baloon.incrementX();
+            }
+        } else if (pickRandomDirection == 2) { // upLeft
+            if (baloon.y <= 0 || baloon.x <= 0) {
+                pickRandomDirection = 3;
+            } else {
+                baloon.decrementY();
+                baloon.decrementX();
+            }
+        } else if (pickRandomDirection == 3) { // downRight
+            if (baloon.y >= SCREEN_HEIGHT - baloon.height || baloon.x >= SCREEN_WIDTH - baloon.width) {
+                pickRandomDirection = 4;
+            } else {
+                baloon.incrementY();
+                baloon.incrementX();
+            }
+        } else if (pickRandomDirection == 4) { // downLeft
+            if (baloon.y >= SCREEN_HEIGHT - baloon.height || baloon.x <= 0) {
+                pickRandomDirection = 1;
+            } else {
+                baloon.incrementY();
+                baloon.decrementX();
+            }
         }
-
         graphicsContext.drawImage(texture, baloon.x, baloon.y, baloon.height, baloon.height);
     }
 
