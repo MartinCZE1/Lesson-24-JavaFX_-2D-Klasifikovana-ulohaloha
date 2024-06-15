@@ -84,28 +84,28 @@ public class MainApplication extends Application {
         texture = baloon.loadTexture();
         popTexture = baloon.loadPopTexture();
 
-        if (pickRandomDirection == 1) { // upRight
+        if (pickRandomDirection == 1) {
             if (baloon.y <= 0 || baloon.x >= SCREEN_WIDTH - baloon.width) {
                 pickRandomDirection = 2;
             } else {
                 baloon.decrementY();
                 baloon.incrementX();
             }
-        } else if (pickRandomDirection == 2) { // upLeft
+        } else if (pickRandomDirection == 2) {
             if (baloon.y <= 0 || baloon.x <= 0) {
                 pickRandomDirection = 3;
             } else {
                 baloon.decrementY();
                 baloon.decrementX();
             }
-        } else if (pickRandomDirection == 3) { // downRight
+        } else if (pickRandomDirection == 3) {
             if (baloon.y >= SCREEN_HEIGHT - baloon.height || baloon.x >= SCREEN_WIDTH - baloon.width) {
                 pickRandomDirection = 4;
             } else {
                 baloon.incrementY();
                 baloon.incrementX();
             }
-        } else if (pickRandomDirection == 4) { // downLeft
+        } else if (pickRandomDirection == 4) {
             if (baloon.y >= SCREEN_HEIGHT - baloon.height || baloon.x <= 0) {
                 pickRandomDirection = 1;
             } else {
