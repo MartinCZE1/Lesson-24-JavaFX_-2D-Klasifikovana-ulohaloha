@@ -17,7 +17,7 @@ public class MainApplication extends Application {
     public static final int SCREEN_WIDTH = 1900;
     public static final int SCREEN_HEIGHT = 920;
     public boolean stop = false;
-    public int speed = 25;
+    public int speed = 10;
     double clickedX;
     double clickedY;
 
@@ -28,6 +28,8 @@ public class MainApplication extends Application {
     Baloon baloon;
     Image texture;
     Image popTexture;
+
+    boolean isClicked;
 
     Random rd = new Random();
 
@@ -51,15 +53,11 @@ public class MainApplication extends Application {
 
             if (clickedX >= baloon.x && clickedX <= baloon.x + baloon.width && clickedY >= baloon.y && clickedY <= baloon.y + baloon.height) {
                 System.out.println("The baloon has been popped.");
-                speed = 0;
-                graphicsContext.drawImage(popTexture, baloon.x, baloon.y, baloon.height, baloon.height);
+                isClicked = true;
                 baloon.setX(rd.nextInt(SCREEN_WIDTH - 100));
                 baloon.setY(rd.nextInt(SCREEN_HEIGHT - 100));
-                speed = 25;
                 pickRandomDirection = rd.nextInt(3) + 1;
                 System.out.println(pickRandomDirection);
-
-
             }
         });
 
@@ -115,7 +113,13 @@ public class MainApplication extends Application {
                 baloon.decrementX();
             }
         }
-        graphicsContext.drawImage(texture, baloon.x, baloon.y, baloon.height, baloon.height);
+
+        if (isClicked) {
+            graphicsContext.drawImage(popTexture, baloon.x, baloon.y, baloon.height, baloon.height);
+            isClicked = false;
+        } else {
+            graphicsContext.drawImage(texture, baloon.x, baloon.y, baloon.height, baloon.height);
+        }
     }
 
     private void clearScreen() {
